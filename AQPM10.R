@@ -8,7 +8,7 @@ library(tidyverse)
 library(lubridate)
 library(astsa)
 library(vars)
-```
+
 
 ## Reading file....
 d <- read.csv("PRSA/PRSA_Data_Aotizhongxin_20130301-20170228.csv")
@@ -31,11 +31,8 @@ NO2 <- data_day$NO2
 SO2 <- data_day$SO2
 CO <- data_day$CO
 O3 <- data_day$O3
-
 PM2.5 <- data_day$PM2.5
 PM10 <- data_day$PM10
-
-
 
 
 ## Plotting the variables wrt time
@@ -46,12 +43,11 @@ plot(PM10,type="l",xlab="time")
 ggplot(data, aes(x=NO2, y=PM2.5), color="steelblue") + geom_line()
 
 
-
 ## Converting (year,month,date) -> (y-m-d) format
 data$date <- as.Date(with(data, paste(year, month, day,sep="-")), "%Y-%m-%d")
 
 
-## New column with summary
+# New column with summary
 colnames(data)
 summary(data)
 
@@ -62,9 +58,53 @@ summary(data)
 # Removing unwanted attributs
 data <- subset(data, select = -c(No, year,month,day,hour,wd,station))
 
-
 data_day <- data.frame(aggregate(data,by=data["date"], mean))
-
 data_day <- subset(data_day, select = -c(date.1))
 
-#index(data_day, row = 1:nrow(data_day), col = NULL, value = c())
+       
+       
+## Plot comparison of between two data-set
+plot(data_day$date,data_day$PM10,type='l',col='#FF8F00', main = 'Data with time-stamp of a day');
+plot(data$date,data$PM10,type='l',col='steelblue', main = 'Original data with time-stamp of an hour')
+
+
+## Analyzing trends in the series
+ggplot(data_day[1:365,], aes(x = data_day$date[1:365], y= data_day$PM10[1:365])) + geom_point(size=1) + geom_smooth(method = "loess")+
+  xlab("Time(2013-2014)") +
+  ylab("PM10")
+
+
+## Dtrending the series
+#https://stackoverflow.com/questions/46508919/flatten-or-detrend-a-seasonal-time-series
+
+trend = stl(ts(data_day$PM10, frequency = 365), s.window = "periodic")$time.series[,2]
+detrend_ts = data_day$PM10 - (trend - trend[1])
+
+plot(data_day$PM10,type='l')
+plot(detrend_ts)
+
+acf(data_day$PM10, lag.max=80)
+acf(detrend_ts, lag.max=80)
+
+
+
+## Comparison between different years for PM10(this block yet to complete)
+xaxis <- 1:365
+
+matplot(xaxis, cbind(data_day$PM10[1:365],data_day$PM10[366:730]),
+        type="l",col=c("red","black"),lty=c(1,1))
+
+layout( matrix( c(1,1,1,1), nrow=4, ncol=1, byrow="FALSE"))
+
+N = lengh(data_day$date)
+i = 1
+
+while (i < N){
+
+  i = i + 1
+}
+  
+
+ # 
+ # plot(hr,type="l",xlab="time")
+ # plot(dar,type="l",xlab="time")
