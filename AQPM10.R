@@ -108,3 +108,36 @@ while (i < N){
  # 
  # plot(hr,type="l",xlab="time")
  # plot(dar,type="l",xlab="time")
+
+       
+## Effect of different input variables on output variables
+
+plot(data_day$NO2,data_day$PM10)
+plot(data_day$SO2,data_day$PM10)
+plot(data_day$CO,data_day$PM10)
+plot(data_day$O3,data_day$PM10)
+
+
+## Smoothing and filtering
+ws1 = 10
+ws2 = 20
+
+b1 = rep(1/ws1,ws1)
+b2 = rep(1/ws2,ws2)
+
+
+hrf1 = filter(data_day$PM10,b1,sides=2)
+hrf2 = filter(data_day$PM10,b2,sides=2)
+
+
+#original
+plot(data_day$PM10,type="l",xlab="time",main="Original Signal(No smoothing)")
+
+#1 ws = 10
+plot(hrf1,type="l",xlab="time",main="Smoothing with window size = 10")
+
+#2 ws = 20
+plot(hrf2,type="l",xlab="time",main="Smoothing with window size = 20")
+
+
+# Next thing could be to analyze the trend on the smoothed graphs
