@@ -141,3 +141,80 @@ plot(hrf2,type="l",xlab="time",main="Smoothing with window size = 20")
 
 
 # Next thing could be to analyze the trend on the smoothed graphs
+       
+       
+       
+
+## Autocorrelation
+
+acf1 <- acf(data_day$PM10, lag.max=80, plot = FALSE)
+bacf1 <- with(acf1, data.frame(lag, acf))
+
+ggplot(data = bacf1, mapping = aes(x = lag, y = acf)) +
+       ggtitle("ACF plot for PM10") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+       geom_hline(aes(yintercept = 0)) +
+       geom_segment(mapping = aes(xend = lag, yend = 0))
+
+
+
+#acf2 <- acf(data_day$PM10, lag.max=80, plot = TRUE)
+
+
+pacf1 <- pacf(data_day$PM10, lag.max=80, plot = FALSE)
+bacf2 <- with(pacf1, data.frame(lag, acf))
+
+ggplot(data = bacf2, mapping = aes(x = lag, y = acf)) +
+       ggtitle("PACF plot for PM10") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+       geom_hline(aes(yintercept = 0)) +
+       geom_segment(mapping = aes(xend = lag, yend = 0))
+
+
+
+
+
+
+## Differencing Autocorrelation
+
+t1 <- diff(data_day$PM10)
+acf1 <- acf(t1, lag.max=80, plot = FALSE)
+bacf1 <- with(acf1, data.frame(lag, acf))
+
+ggplot(data = bacf1, mapping = aes(x = lag, y = acf)) +
+       ggtitle("ACF plot for Differenced PM10") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+       geom_hline(aes(yintercept = 0)) +
+       geom_segment(mapping = aes(xend = lag, yend = 0))
+
+
+
+#acf2 <- acf(data_day$PM10, lag.max=80, plot = TRUE)
+
+
+pacf1 <- pacf(t1, lag.max=80, plot = FALSE)
+bacf2 <- with(pacf1, data.frame(lag, acf))
+
+ggplot(data = bacf2, mapping = aes(x = lag, y = acf)) +
+       ggtitle("PACF plot for PM10") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+       geom_hline(aes(yintercept = 0)) +
+       geom_segment(mapping = aes(xend = lag, yend = 0))
+
+
+#pacf(data_day$PM10, lag.max=80, plot = TRUE)
+
+Box.test(t1, lag=10, type="Ljung-Box")
+
+
+
+
+## Dtrending autocorrelation
+require(pracma)
+y1 <- detrend(data_day$PM10)
+
+acf(data_day$PM10, lag.max = 80)
+acf(y1,lag.max = 80)
+
+Box.test(y1, lag=10, type="Ljung-Box")
+
